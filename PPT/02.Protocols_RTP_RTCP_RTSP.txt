@@ -1,0 +1,122 @@
+OPTIONS
+DESCRIBE
+SETUP / TEARDOWN
+PLAY / PAUSE
+GET_PARAMETER / SET_PARAMETER
+
+
+OPTIONS
+=====================================================
+C->S:  OPTIONS rtsp://example.com/media.mp4 RTSP/1.0
+       CSeq: 1
+       Require: implicit-play
+       Proxy-Require: gzipped-messages
+
+S->C:  RTSP/1.0 200 OK
+       CSeq: 1
+       Public: DESCRIBE, SETUP, TEARDOWN, PLAY, PAUSE
+
+DESCRIBE
+=====================================================
+C->S: DESCRIBE rtsp://example.com/media.mp4 RTSP/1.0
+      CSeq: 2
+
+S->C: RTSP/1.0 200 OK
+      CSeq: 2
+      Content-Base: rtsp://example.com/media.mp4
+      Content-Type: application/sdp
+      Content-Length: 460
+
+      m=video 0 RTP/AVP 96
+      a=control:streamid=0
+      a=range:npt=0-7.741000
+      a=length:npt=7.741000
+      a=rtpmap:96 MP4V-ES/5544
+      a=mimetype:string;"video/MP4V-ES"
+      a=AvgBitRate:integer;304018
+      a=StreamName:string;"hinted video track"
+      m=audio 0 RTP/AVP 97
+      a=control:streamid=1
+      a=range:npt=0-7.712000
+      a=length:npt=7.712000
+      a=rtpmap:97 mpeg4-generic/32000/2
+      a=mimetype:string;"audio/mpeg4-generic"
+      a=AvgBitRate:integer;65790
+      a=StreamName:string;"hinted audio track"
+
+
+SETUP
+=====================================================
+C->S: SETUP rtsp://example.com/media.mp4/streamid=0 RTSP/1.0
+      CSeq: 3
+      Transport: RTP/AVP;unicast;client_port=8000-8001
+
+S->C: RTSP/1.0 200 OK
+      CSeq: 3
+      Transport: RTP/AVP;unicast;client_port=8000-8001;server_port=9000-9001
+      Session: 12345678
+
+
+
+PLAY / PAUSE
+=====================================================
+C->S: PLAY rtsp://example.com/media.mp4 RTSP/1.0
+      CSeq: 4
+      Range: npt=5-20
+      Session: 12345678
+
+S->C: RTSP/1.0 200 OK
+      CSeq: 4
+      Session: 12345678
+      RTP-Info: url=rtsp://example.com/media.mp4/streamid=0;seq=9810092;rtptime=3450012
+
+	----------------------------------------------------
+
+C->S: PAUSE rtsp://example.com/media.mp4 RTSP/1.0
+      CSeq: 5
+      Session: 12345678
+
+S->C: RTSP/1.0 200 OK
+      CSeq: 5
+      Session: 12345678
+
+
+RECORD
+=====================================================
+C->S: RECORD rtsp://example.com/media.mp4 RTSP/1.0
+      CSeq: 6
+      Session: 12345678
+
+S->C: RTSP/1.0 200 OK
+      CSeq: 6
+      Session: 12345678
+
+
+TEARDOWN
+=====================================================
+C->S: TEARDOWN rtsp://example.com/media.mp4 RTSP/1.0
+      CSeq: 8
+      Session: 12345678
+
+S->C: RTSP/1.0 200 OK
+      CSeq: 8
+
+
+GET_PARAMETER / SET_PARAMETER
+=====================================================
+S->C: GET_PARAMETER rtsp://example.com/media.mp4 RTSP/1.0
+      CSeq: 9
+      Content-Type: text/parameters
+      Session: 12345678
+      Content-Length: 15
+
+      packets_received
+
+C->S: RTSP/1.0 200 OK
+      CSeq: 9
+      Content-Length: 46
+      Content-Type: text/parameters
+
+      packets_received: 10
+
+
